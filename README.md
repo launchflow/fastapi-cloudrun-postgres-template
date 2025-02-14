@@ -44,6 +44,7 @@ graph TB
 - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
 - Terraform installed
 - GCP account with billing enabled
+- Docker installed
 
 ### 1. Initial Setup
 ```bash
@@ -103,10 +104,52 @@ gcloud auth login --update-adc
 
 > ⏱️ Deployment takes approximately 10 minutes
 
+## Deploying New Images 🐳
+
+### Deploying to Development
+
+To deploy a new image to the development environment:
+
+1. Make sure you're in the root directory of the project
+2. Run the development deployment script:
+   ```bash
+   ./scripts/deploy-dev.sh
+   ```
+
+This script will:
+- Build a new Docker image with the `:dev` tag
+- Push it to your Artifact Registry
+- Deploy it to Cloud Run in your development environment
+- Output the service URL when complete
+
+### Deploying to Production
+
+To deploy a new image to the production environment:
+
+1. Make sure you've tested your changes in development first
+2. Run the production deployment script:
+   ```bash
+   ./scripts/deploy-prod.sh
+   ```
+
+This script will:
+- Pull the current dev image
+- Tag it as `:prod`
+- Push it to your Artifact Registry
+- Ask for confirmation before deploying
+- Deploy it to Cloud Run in your production environment
+- Output the service URL when complete
+
+> ⚠️ **Important**: The production deployment script requires manual confirmation before proceeding with the deployment.
+
 ### Troubleshooting 🔍
 
 If you encounter permission issues:
 1. Wait a few minutes for permission propagation and APIs to be enabled
 2. Try running the terraform commands again
 3. Verify your GCP authentication is current
-
+4. Ensure you have the necessary permissions in both projects
+5. Check that Docker is properly authenticated with GCP:
+   ```bash
+   gcloud auth configure-docker [REGION]-docker.pkg.dev
+   ```
